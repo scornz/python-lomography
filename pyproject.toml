@@ -14,7 +14,6 @@ python = "^3.10"
 mypy = "^1.10.0"
 black = "^24.4.2"
 pre-commit = "^3.7.1"
-gitlint = "^0.19.1"
 
 
 [build-system]

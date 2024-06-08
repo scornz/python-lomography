@@ -3,3 +3,7 @@ repos:
     rev: 24.4.2
     hooks:
       - id: black
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
