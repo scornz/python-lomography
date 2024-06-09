@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "python-lomography"
 version = "0.1.0"
-description = ""
+description = "A Python SDK for fetching images from the lomography.com API."
 authors = ["Mike Scornavacca <52425912+scornz@users.noreply.github.com>"]
 readme = "README.md"
 packages = [{include = "lomography"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -15,6 +16,10 @@ mypy = "^1.10.0"
 black = "^24.4.2"
 pre-commit = "^3.7.1"
 
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.2.2"
 
 [build-system]
 requires = ["poetry-core"]
