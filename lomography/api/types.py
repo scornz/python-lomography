@@ -183,3 +183,23 @@ class PhotoDict(TypedDict):
     location: LocationDict
     assets: AssetsDict
     user: UserDict
+
+
+class MetaDict(TypedDict):
+    """Metadata associated with a response from the Lomography API.
+    Normally contains information about the total number of items and
+    the current page.
+
+    Example:
+    ```
+    {
+        "total_entries": 20,
+        "per_page": 20,
+        "page": 1
+    }
+    ```
+    """
+
+    total_entries: int
+    per_page: int
+    page: int
