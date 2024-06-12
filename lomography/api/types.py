@@ -1,5 +1,5 @@
 # Typing
-from typing import TypedDict
+from typing import List, TypedDict
 
 
 class CameraDict(TypedDict):
@@ -203,3 +203,10 @@ class MetaDict(TypedDict):
     total_entries: int
     per_page: int
     page: int
+
+
+class PhotosResponseDict(TypedDict):
+    """A dictionary representing a response of photos."""
+
+    meta: MetaDict
+    photos: List[PhotoDict]
