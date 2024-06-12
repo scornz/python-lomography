@@ -6,39 +6,3 @@ from .types import PhotosResponseDict
 
 # Utilities
 from lomography.utils.requests import get
-
-
-def fetch_popular_photos(lomo: Lomography) -> PhotosResponseDict:
-    """Fetch popular photos. This will return the most popular photos (uploaded in the last month).
-
-    Args:
-        `lomo` (Lomography): An instance of the Lomography class.
-
-    Returns:
-        PhotosResponseDict: A dictionary containing the metadata and a list of photos.
-    """
-    return get(lomo, "/photos/popular")
-
-
-def fetch_recent_photos(lomo: Lomography) -> PhotosResponseDict:
-    """Fetch recent photos. This will return the most recent photos (right as they are uploaded).
-
-    Args:
-        `lomo` (Lomography): An instance of the Lomography class.
-
-    Returns:
-        PhotosResponseDict: A dictionary containing the metadata and a list of photos.
-    """
-    return get(lomo, "/photos/recent")
-
-
-def fetch_selected_photos(lomo: Lomography) -> PhotosResponseDict:
-    """Fetch selected photos. This will return a handpicked collection of photos.
-
-    Args:
-        `lomo` (Lomography): An instance of the Lomography class.
-
-    Returns:
-        PhotosResponseDict: A dictionary containing the metadata and a list of photos.
-    """
-    return get(lomo, "/photos/selected")
