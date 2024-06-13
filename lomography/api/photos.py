@@ -2,18 +2,10 @@
 from lomography.base import Lomography
 
 # Typing
-from typing import TypedDict, List
-from .types import MetaDict, PhotoDict
+from .types import PhotosResponseDict
 
 # Utilities
 from lomography.utils.requests import get
-
-
-class PhotosResponseDict(TypedDict):
-    """A dictionary representing a response of photos."""
-
-    meta: MetaDict
-    photos: List[PhotoDict]
 
 
 def fetch_popular_photos(lomo: Lomography) -> PhotosResponseDict:
