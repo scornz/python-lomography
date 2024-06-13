@@ -33,7 +33,7 @@ class Lomography:
     """
 
     def __init__(self, api_key: str, verify: bool = False):
-        self.api_key = api_key
+        self._api_key = api_key
         self.session = Session()
 
         # Verify authentication, unless otherwise disabled
@@ -41,6 +41,12 @@ class Lomography:
             raise ValueError(
                 "Invalid API key. Please provide a valid Lomography API key."
             )
+
+    @property
+    def api_key(self):
+        """Return the API key used for authentication."""
+
+        return self._api_key
 
     def get_photos(self, category, page=1):
         pass
