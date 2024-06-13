@@ -1,5 +1,5 @@
 # Typing
-from typing import List, TypedDict
+from typing import List, Literal, NotRequired, TypedDict, Union
 
 
 class CameraDict(TypedDict):
@@ -36,6 +36,40 @@ class FilmDict(TypedDict):
     name: str
 
 
+class LensDict(TypedDict):
+    """A specific lens model, associated with an ID and name. Returned
+    directly from the Lomography API, with little to no processing.
+
+    Example:
+    ```
+    {
+        "id":3532,
+        "name":"Zenzanon MC 40mm f4"
+    }
+    ```
+    """
+
+    id: int
+    name: str
+
+
+class TagDict(TypedDict):
+    """A specific tag, associated with an ID and name. Returned
+    directly from the Lomography API, with little to no processing.
+
+    Example:
+    ```
+    {
+        "id": 74065,
+        "name": "lewis"
+    }
+    ```
+    """
+
+    id: int
+    name: str
+
+
 class LocationDict(TypedDict):
     """A location object, normally associated with a particular photo. Returned
     directly from the Lomography API, with little to no processing.
@@ -55,13 +89,12 @@ class LocationDict(TypedDict):
 
 class ImageDict(TypedDict):
     """A specific image. Returned directly from the Lomography API,
-    with little to no processing. Normally a sub-object of a photo object or
-    an avatar of a user.
+    with little to no processing.
 
     Example:
     ```
     {
-        "url": "http://cloud.lomography.com/576/386/88/3c4c6c7e9774abdd110b45b679c1c579a42da2.jpg",
+        "url": "http://cloud.lomography.com/576/386/88/3c4c6c7e9774abdd...",
         "width": 576,
         "height": 386
     }
@@ -73,6 +106,26 @@ class ImageDict(TypedDict):
     height: int
 
 
+class PhotoImageDict(ImageDict):
+    """A specific photo. Returned directly from the Lomography API,
+    with little to no processing. Normally a sub-object of a photo object.
+
+    Example:
+    ```
+    {
+        "url":"https://cdn.assets.lomography.com/33/520...",
+        "width":576,
+        "height":432,
+        "ratio":1.33333333333333,
+        "filename":"576x432x2.jpg"
+    }
+    ```
+    """
+
+    ratio: float
+    filename: str
+
+
 class AssetsDict(TypedDict):
     """A specific set of photo assets, containing a small and large photo.
     Returned directly from the Lomography API, with little to no processing.
@@ -81,12 +134,12 @@ class AssetsDict(TypedDict):
     ```
     {
         "small": {
-            "url": "http://cloud.lomography.com/96/64/88/3c4c6c7e9774abdd110b45b679c1c579a42da2.jpg",
+            "url": "http://cloud.lomography.com/96/64/88/3c4c6c7e9774...",
             "width": 96,
             "height": 64
         },
         "large": {
-            "url": "http://cloud.lomography.com/576/386/88/3c4c6c7e9774abdd110b45b679c1c579a42da2.jpg",
+            "url": "http://cloud.lomography.com/576/386/88/3c4c6c7e9774...",
             "width": 576,
             "height": 386
         }
@@ -96,11 +149,11 @@ class AssetsDict(TypedDict):
 
     """Small image (with an inner bounding box of 96 x 64 pixels - 
     that means the image is at least this size)"""
-    small: ImageDict
+    small: PhotoImageDict
 
     """Large image (with an outer bounding box of 576 x 576 pixels - that means 
     the image is at most this size)."""
-    large: ImageDict
+    large: PhotoImageDict
 
 
 class UserDict(TypedDict):
@@ -113,7 +166,7 @@ class UserDict(TypedDict):
         "username": "recurving",
         "url": "http://www.lomography.com/homes/recurving",
         "avatar": {
-          "url": "http://cloud.lomography.com/290/192/58/63307c8ed53828bd563cc08156d044de8dd93f.jpg",
+          "url": "http://cloud.lomography.com/290/192/58/63307c8ed53828b...",
           "width": 290,
           "height": 192
         }
@@ -133,43 +186,63 @@ class PhotoDict(TypedDict):
     Example:
     ```
     {
-        "id": 11336951,
-        "title": "Los Angeles",
-        "description": "All these shots were taken during a trip to Los Angeles in April 2010.",
-        "url": "http://www.lomography.com/photos/11336951",
-        "camera": {
-            "id": 3314883,
-            "name": "Lomo LC-A"
-        },
-        "film": {
-            "id": 871911028,
-            "name": "Lomographic X-Pro Slide 100"
-        },
-        "location": {
-            "longitude": -82.4575967,
-            "latitude": 27.1000553
-        },
-        "assets": {
-            "small": {
-            "url": "http://cloud.lomography.com/96/64/88/3c4c6c7e9774abdd110b45b679c1c579a42da2.jpg",
-            "width": 96,
-            "height": 64
+        "id": 27316210,
+        "title":"Shieling, Barvas, Lewis",
+        "description":"ETRSi ~ Kentmere 100 ~ Rodinal 1+25 @ 9mins",
+        "url":"http://www.lomography.com/photos/27316210",
+        "assets":{
+            "large":{
+                "url":"https://cdn.assets.lomography.com/33/520...",
+                "width":576,
+                "height":432,
+                "ratio":1.33333333333333,
+                "filename":"576x432x2.jpg"
             },
-            "large": {
-            "url": "http://cloud.lomography.com/576/386/88/3c4c6c7e9774abdd110b45b679c1c579a42da2.jpg",
-            "width": 576,
-            "height": 386
+            "small":{
+                "url":"https://cdn.assets.lomography.com/33/520...",
+                "width":96,
+                "height":72,
+                "ratio":1.33333333333333,
+                "filename":"96x72x2.jpg"
             }
         },
-        "user": {
-            "username": "recurving",
-            "url": "http://www.lomography.com/homes/recurving",
-            "avatar": {
-            "url": "http://cloud.lomography.com/290/192/58/63307c8ed53828bd563cc08156d044de8dd93f.jpg",
-            "width": 290,
-            "height": 192
+        "asset_hash":"33520fdaf9568a5c722546e919ef90de96eec983",
+        "asset_width":3500,
+        "asset_height":2625,
+        "asset_ratio":1.33333333333333,
+        "asset_preview":"data:image/gif;base64,R0lGODdhBQAFAPQAAB4e...",
+        "film":{
+            "id":871927949,
+            "name":"Kentmere 100"
+        },
+        "camera":{
+            "id":3323987,
+            "name":"Zenza Bronica ETRSi"
+        },
+        "lens":{
+            "id":3532,
+            "name":"Zenzanon MC 40mm f4"
+        },
+        "user":{
+            "id":536699,
+            "username":"jonography",
+            "url":"http://www.lomography.com/homes/jonography",
+            "avatar":{
+                "url":"https://cdn.assets.lomography.com/33/da621a4c20...",
+                "width":192,
+                "height":192
             }
-        }
+        },
+        "tags":[
+            {
+                "id":74065,
+                "name":"lewis"
+            },
+            {
+                "id":87148,
+                "name":"outer hebrides"
+            },
+        ]
     }
     ```
     """
@@ -179,9 +252,22 @@ class PhotoDict(TypedDict):
     description: str
     url: str
     camera: CameraDict
-    film: FilmDict
-    location: LocationDict
+    film: Union[FilmDict, Literal["None"]]
+
+    # Specified in the API documentation, but currently not included
+    # location: NotRequired[LocationDict]
+
     assets: AssetsDict
+
+    asset_hash: str
+    asset_width: int
+    asset_height: int
+    asset_ratio: float
+    asset_preview: str
+
+    lens: Union[LensDict, Literal["None"]]
+    tags: List[TagDict]
+
     user: UserDict
 
 
