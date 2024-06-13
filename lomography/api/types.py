@@ -247,7 +247,7 @@ class PhotoDict(TypedDict):
     ```
     """
 
-    id: str
+    id: int
     title: str
     description: str
     url: str
