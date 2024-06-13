@@ -1,5 +1,7 @@
 from requests import Session
 
+from lomography.api import verify_authentication
+
 
 class Lomography:
     """
@@ -8,9 +10,9 @@ class Lomography:
     to fetch popular and recent photos, as well as specific photos taken by certain cameras or films,
     and supports pagination to navigate through larger datasets.
 
-    Attributes:
-        api_key (str): The API key for authentication to access the Lomography API.
-        base_url (str): Base URL for the Lomography API.
+    Constructor:
+        `api_key` (str): The API key for authentication to access the Lomography API.
+        `verify` (bool): Whether or not to verify the API key upon construction. Default is False.
 
     Methods:
         `get_photos(category, page=1)`: Retrieve photos based on category ('popular', 'recent', or 'selected').
@@ -18,7 +20,7 @@ class Lomography:
         `get_film_photos(film_id, category)`: Fetch photos using a specific film type.
         `get_location_photos(latitude, longitude, radius, category)`: Fetch photos around a specific geographic location.
 
-    Usage:
+    Example Usage:
         >>> lomo = Lomography(api_key="your_api_key_here")
         >>> popular_photos = lomo.get_photos('popular')
 
@@ -30,17 +32,15 @@ class Lomography:
     The full API is documented at the Lomography website.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, verify: bool = False):
         self.api_key = api_key
-        self.base_url = "https://api.lomography.com/v1/"
         self.session = Session()
 
-        self._authenticate()
-
-    def _authenticate(self):
-        """Test authentication, verifying that the API key is correct by
-        making a dummy request to the API."""
-        pass
+        # Verify authentication, unless otherwise disabled
+        if verify and not verify_authentication(self):
+            raise ValueError(
+                "Invalid API key. Please provide a valid Lomography API key."
+            )
 
     def get_photos(self, category, page=1):
         pass
