@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from lomography.base import Lomography
 
 
-def verify_authentication(lomo: Lomography) -> bool:
+async def verify_authentication(lomo: Lomography) -> bool:
     """Verify that the API key is valid. NOTE: This calls /cameras/3314883,
     which is a known camera ID, however this isn't an actual authentication
     endpoint. It works for now, but this implementation will probably change eventually.
@@ -23,7 +23,7 @@ def verify_authentication(lomo: Lomography) -> bool:
         bool: True if the API key is valid, False otherwise.
     """
     try:
-        fetch_camera_by_id(lomo, 3314883)
+        await fetch_camera_by_id(lomo, 3314883)
         return True
     except HTTPError:
         return False

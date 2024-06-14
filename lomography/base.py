@@ -1,5 +1,6 @@
 from lomography.api import verify_authentication
 from aiohttp import ClientSession
+import asyncio
 
 
 class Lomography:
@@ -36,7 +37,7 @@ class Lomography:
         self.session = ClientSession()
 
         # Verify authentication, unless otherwise disabled
-        if verify and not verify_authentication(self):
+        if verify and not asyncio.run(verify_authentication(self)):
             raise ValueError(
                 "Invalid API key. Please provide a valid Lomography API key."
             )
@@ -46,6 +47,19 @@ class Lomography:
         """Return the API key used for authentication."""
 
         return self._api_key
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def close(self):
+        """Close the session, releasing any resources. This should be called when
+        the instance is no longer needed. This is automatically called if
+        used within a with block."""
+
+        asyncio.run(self.session.close())
 
     def get_photos(self, category, page=1):
         pass
