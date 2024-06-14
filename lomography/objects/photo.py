@@ -7,7 +7,7 @@ from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from lomography.base import Lomography
 
-from lomography.objects import LomoPhotoImage
+from lomography.objects import LomoPhotoImage, LomoCamera
 
 
 class LomoPhoto:
@@ -20,7 +20,7 @@ class LomoPhoto:
     description: Optional[str]
     url: str
 
-    # camera: Optional[LomoCamera]
+    camera: Optional[LomoCamera]
     # film: Optional[LomoFilm]
     # user: User[LomoUser]
 
@@ -48,6 +48,12 @@ class LomoPhoto:
 
         self.small = LomoPhotoImage(data["assets"]["small"])
         self.large = LomoPhotoImage(data["assets"]["large"])
+
+        self.camera = (
+            LomoCamera(lomo, data["camera"])
+            if data["camera"] and data["camera"] != "None"
+            else None
+        )
 
         self.asset_hash = data["asset_hash"]
         self.asset_width = data["asset_width"]
