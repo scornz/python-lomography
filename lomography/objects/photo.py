@@ -4,12 +4,10 @@ from __future__ import annotations
 from lomography.api.types import AssetsDict, PhotoDict
 from typing import Optional, TYPE_CHECKING
 
-from lomography.objects.film import LomoFilm
-
 if TYPE_CHECKING:
     from lomography.base import Lomography
 
-from lomography.objects import LomoPhotoImage, LomoCamera
+from lomography.objects import LomoPhotoImage, LomoCamera, LomoFilm, LomoUser
 
 
 class LomoPhoto:
@@ -24,7 +22,7 @@ class LomoPhoto:
 
     camera: Optional[LomoCamera]
     film: Optional[LomoFilm]
-    # user: User[LomoUser]
+    user: LomoUser
 
     small: LomoPhotoImage
     large: LomoPhotoImage
@@ -62,6 +60,8 @@ class LomoPhoto:
             if data["film"] and data["film"] != "None"
             else None
         )
+
+        self.user = LomoUser(lomo, data["user"])
 
         self.asset_hash = data["asset_hash"]
         self.asset_width = data["asset_width"]
