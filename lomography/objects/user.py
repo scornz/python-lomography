@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from lomography.base import Lomography
 
-from lomography.objects import LomoImage
+from .image import LomoImage
 
 
 class LomoUser:

@@ -4,13 +4,15 @@ from __future__ import annotations
 from lomography.api.types import PhotoDict
 from typing import List, Optional, TYPE_CHECKING
 
-from lomography.objects.lens import LomoLens
-from lomography.objects.tag import LomoTag
+from .camera import LomoCamera
+from .film import LomoFilm
+from .image import LomoPhotoImage
+from .lens import LomoLens
+from .tag import LomoTag
+from .user import LomoUser
 
 if TYPE_CHECKING:
     from lomography.base import Lomography
-
-from lomography.objects import LomoPhotoImage, LomoCamera, LomoFilm, LomoUser
 
 
 class LomoPhoto:
