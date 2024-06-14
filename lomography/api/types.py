@@ -251,7 +251,7 @@ class PhotoDict(TypedDict):
     title: str
     description: str
     url: str
-    camera: CameraDict
+    camera: Union[CameraDict, Literal["None"]]
     film: Union[FilmDict, Literal["None"]]
 
     # Specified in the API documentation, but currently not included

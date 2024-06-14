@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 # Internal
-from lomography.base import Lomography
 from lomography.constants import BASE_URL
+
 
 # External
 from requests import HTTPError
 
 # Typing
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lomography.base import Lomography
 
 
 def get(lomo: Lomography, url: str, params: Optional[dict] = None):

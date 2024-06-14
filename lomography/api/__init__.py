@@ -1,7 +1,14 @@
-from lomography.base import Lomography
+from __future__ import annotations
+
 from lomography.api.cameras import fetch_camera_by_id
 
 from requests import HTTPError
+
+# Typing
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lomography.base import Lomography
 
 
 def verify_authentication(lomo: Lomography) -> bool:

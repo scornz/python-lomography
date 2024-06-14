@@ -1,9 +1,11 @@
-# Internal
-from lomography.base import Lomography
+from __future__ import annotations
 
 # Typing
-from typing import List, TypedDict
+from typing import List, TypedDict, TYPE_CHECKING
 from .types import CameraDict, MetaDict, PhotosResponseDict
+
+if TYPE_CHECKING:
+    from lomography.base import Lomography
 
 # Utilities
 from lomography.utils.requests import get
