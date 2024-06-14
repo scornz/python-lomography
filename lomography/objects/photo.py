@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 # Typing
-from lomography.api.types import AssetsDict, PhotoDict
-from typing import Optional, TYPE_CHECKING
+from lomography.api.types import PhotoDict
+from typing import List, Optional, TYPE_CHECKING
+
+from lomography.objects.lens import LomoLens
+from lomography.objects.tag import LomoTag
 
 if TYPE_CHECKING:
     from lomography.base import Lomography
@@ -33,6 +36,9 @@ class LomoPhoto:
     asset_height: int
     asset_ratio: float
     asset_preview: str
+
+    lens: Optional[LomoLens]
+    tags: List[LomoTag]
 
     def __init__(self, lomo: Lomography, data: PhotoDict):
 
@@ -68,3 +74,10 @@ class LomoPhoto:
         self.asset_height = data["asset_height"]
         self.asset_ratio = data["asset_ratio"]
         self.asset_preview = data["asset_preview"]
+
+        self.lens = (
+            LomoLens(lomo, data["lens"])
+            if data["lens"] and data["lens"] != "None"
+            else None
+        )
+        self.tags = [LomoTag(lomo, tag) for tag in data["tags"]]

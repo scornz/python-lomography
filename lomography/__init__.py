@@ -7,6 +7,8 @@ from .objects import (
     LomoUser,
     LomoPhotoImage,
     LomoImage,
+    LomoLens,
+    LomoTag,
 )
 
 __version__ = "0.1.0"
