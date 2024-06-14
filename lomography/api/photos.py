@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from lomography.utils.requests import get
 
 
-def fetch_popular_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
+async def fetch_popular_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
     """Fetch popular photos. This will return the most popular photos (uploaded in the last month).
 
     Args:
@@ -20,10 +20,10 @@ def fetch_popular_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, "/photos/popular", {"page": page})
+    return await get(lomo, "/photos/popular", {"page": page})
 
 
-def fetch_recent_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
+async def fetch_recent_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
     """Fetch recent photos. This will return the most recent photos (right as they are uploaded).
 
     Args:
@@ -33,10 +33,10 @@ def fetch_recent_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, "/photos/recent", {"page": page})
+    return await get(lomo, "/photos/recent", {"page": page})
 
 
-def fetch_selected_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
+async def fetch_selected_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict:
     """Fetch selected photos. This will return a handpicked collection of photos.
 
     Args:
@@ -46,4 +46,4 @@ def fetch_selected_photos(lomo: Lomography, page: int = 1) -> PhotosResponseDict
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, "/photos/selected", {"page": page})
+    return await get(lomo, "/photos/selected", {"page": page})

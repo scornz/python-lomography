@@ -18,7 +18,7 @@ class CamerasResponseDict(TypedDict):
     cameras: List[CameraDict]
 
 
-def fetch_cameras(lomo: Lomography, page: int = 1) -> CamerasResponseDict:
+async def fetch_cameras(lomo: Lomography, page: int = 1) -> CamerasResponseDict:
     """Fetch all cameras. This will return a list of all cameras.
 
     Args:
@@ -28,10 +28,10 @@ def fetch_cameras(lomo: Lomography, page: int = 1) -> CamerasResponseDict:
     Returns:
         CamerasResponseDict: A dictionary containing the metadata and a list of cameras.
     """
-    return get(lomo, "/cameras", {"page": page})
+    return await get(lomo, "/cameras", {"page": page})
 
 
-def fetch_camera_by_id(lomo: Lomography, camera_id: int) -> CameraDict:
+async def fetch_camera_by_id(lomo: Lomography, camera_id: int) -> CameraDict:
     """Fetch a singular camera by its unique ID. This will return a single camera.
 
     Args:
@@ -41,10 +41,10 @@ def fetch_camera_by_id(lomo: Lomography, camera_id: int) -> CameraDict:
     Returns:
         CameraDict: A dictionary containing the camera data.
     """
-    return get(lomo, f"/cameras/{camera_id}")
+    return await get(lomo, f"/cameras/{camera_id}")
 
 
-def fetch_popular_photos_by_camera_id(
+async def fetch_popular_photos_by_camera_id(
     lomo: Lomography, camera_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch popular photos from a specific camera. This will return the most
@@ -58,10 +58,10 @@ def fetch_popular_photos_by_camera_id(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, f"/cameras/{camera_id}/photos/popular", {"page": page})
+    return await get(lomo, f"/cameras/{camera_id}/photos/popular", {"page": page})
 
 
-def fetch_recent_photos_by_camera_id(
+async def fetch_recent_photos_by_camera_id(
     lomo: Lomography, camera_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch recent photos from a specific camera. This will return the most
@@ -75,4 +75,4 @@ def fetch_recent_photos_by_camera_id(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, f"/cameras/{camera_id}/photos/recent", {"page": page})
+    return await get(lomo, f"/cameras/{camera_id}/photos/recent", {"page": page})

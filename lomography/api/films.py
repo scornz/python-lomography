@@ -18,7 +18,7 @@ class FilmsResponseDict(TypedDict):
     films: List[FilmDict]
 
 
-def fetch_films(lomo: Lomography, page: int = 1) -> FilmsResponseDict:
+async def fetch_films(lomo: Lomography, page: int = 1) -> FilmsResponseDict:
     """Fetch all film types. This will return a list of all films.
 
     Args:
@@ -28,10 +28,10 @@ def fetch_films(lomo: Lomography, page: int = 1) -> FilmsResponseDict:
     Returns:
         FilmsResponseDict: A dictionary containing the metadata and a list of films.
     """
-    return get(lomo, "/films", {"page": page})
+    return await get(lomo, "/films", {"page": page})
 
 
-def fetch_film_by_id(lomo: Lomography, film_id: int) -> FilmDict:
+async def fetch_film_by_id(lomo: Lomography, film_id: int) -> FilmDict:
     """Fetch a singular film by its unique ID. This will return a single film.
 
     Args:
@@ -41,10 +41,10 @@ def fetch_film_by_id(lomo: Lomography, film_id: int) -> FilmDict:
     Returns:
         FilmDict: A dictionary containing the film data.
     """
-    return get(lomo, f"/films/{film_id}")
+    return await get(lomo, f"/films/{film_id}")
 
 
-def fetch_popular_photos_by_film_id(
+async def fetch_popular_photos_by_film_id(
     lomo: Lomography, film_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch popular photos from a specific film. This will return the most
@@ -58,10 +58,10 @@ def fetch_popular_photos_by_film_id(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, f"/films/{film_id}/photos/popular", {"page": page})
+    return await get(lomo, f"/films/{film_id}/photos/popular", {"page": page})
 
 
-def fetch_recent_photos_by_film_id(
+async def fetch_recent_photos_by_film_id(
     lomo: Lomography, film_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch recent photos from a specific film. This will return the most
@@ -75,4 +75,4 @@ def fetch_recent_photos_by_film_id(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(lomo, f"/films/{film_id}/photos/recent", {"page": page})
+    return await get(lomo, f"/films/{film_id}/photos/recent", {"page": page})

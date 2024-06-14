@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 from lomography.utils.requests import get
 
 
-def fetch_recent_photos_within_bounding_box(
+async def fetch_recent_photos_within_bounding_box(
     lomo: Lomography,
     latitude_north: float,
     longitude_east: float,
@@ -33,14 +33,14 @@ def fetch_recent_photos_within_bounding_box(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(
+    return await get(
         lomo,
         f"/location/within/{latitude_north}/{longitude_east}/{latitude_south}/{longitude_west}/photos/recent",
         {"page": page},
     )
 
 
-def fetch_popular_photos_within_bounding_box(
+async def fetch_popular_photos_within_bounding_box(
     lomo: Lomography,
     latitude_north: float,
     longitude_east: float,
@@ -62,14 +62,14 @@ def fetch_popular_photos_within_bounding_box(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(
+    return await get(
         lomo,
         f"/location/within/{latitude_north}/{longitude_east}/{latitude_south}/{longitude_west}/photos/popular",
         {"page": page},
     )
 
 
-def fetch_photos_near_point(
+async def fetch_photos_near_point(
     lomo: Lomography, latitude: float, longitude: float, dist: int = 10, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch photos near a particular point in a range. This will return the photos taken
@@ -85,14 +85,14 @@ def fetch_photos_near_point(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(
+    return await get(
         lomo,
         f"/location/around/{latitude}/{longitude}/{dist}/photos/distance",
         {"page": page},
     )
 
 
-def fetch_recent_photos_near_point(
+async def fetch_recent_photos_near_point(
     lomo: Lomography, latitude: float, longitude: float, dist: int = 10, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch recent photos near a particular point in a range. This will return
@@ -108,14 +108,14 @@ def fetch_recent_photos_near_point(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(
+    return await get(
         lomo,
         f"/location/around/{latitude}/{longitude}/{dist}/photos/recent",
         {"page": page},
     )
 
 
-def fetch_popular_photos_near_point(
+async def fetch_popular_photos_near_point(
     lomo: Lomography, latitude: float, longitude: float, dist: int = 10, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch popular photos near a particular point in a range. This will return
@@ -131,7 +131,7 @@ def fetch_popular_photos_near_point(
     Returns:
         PhotosResponseDict: A dictionary containing the metadata and a list of photos.
     """
-    return get(
+    return await get(
         lomo,
         f"/location/around/{latitude}/{longitude}/{dist}/photos/popular",
         {"page": page},

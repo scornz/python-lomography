@@ -1,6 +1,5 @@
-from requests import Session
-
 from lomography.api import verify_authentication
+from aiohttp import ClientSession
 
 
 class Lomography:
@@ -34,7 +33,7 @@ class Lomography:
 
     def __init__(self, api_key: str, verify: bool = False):
         self._api_key = api_key
-        self.session = Session()
+        self.session = ClientSession()
 
         # Verify authentication, unless otherwise disabled
         if verify and not verify_authentication(self):
