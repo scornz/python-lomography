@@ -1,3 +1,4 @@
+from typing import Optional
 from aiohttp import ClientSession
 import asyncio
 
@@ -11,7 +12,11 @@ class BaseLomography:
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.session = ClientSession()
+        self.session: Optional[ClientSession] = None
+
+    async def create_session(self):
+        if not self.session:
+            self.session = ClientSession()
 
     async def close(self):
         """Abstract method to close the session, must be implemented by subclasses."""
@@ -48,9 +53,18 @@ class Lomography(BaseLomography):
     The full API is documented at the Lomography website.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, loop: Optional[asyncio.AbstractEventLoop] = None):
         super().__init__(api_key)
-        self.loop = asyncio.get_event_loop()
+        # Flag to indicate whether we created the loop ourselves
+        self._own_loop = False
+
+        if loop is None:
+            self.loop = asyncio.new_event_loop()
+            self.own_loop = True
+        else:
+            self.loop = loop
+
+        self.loop.run_until_complete(self.create_session())
 
     def __enter__(self):
         return self
@@ -59,14 +73,13 @@ class Lomography(BaseLomography):
         self.close()
 
     def close(self):
-        """Synchronously close the session by running the asynchronous close method."""
-        if self.loop.is_running():
-            # If the loop is already running, schedule the close operation as a task
-            # This ensures that the close operation doesn't block the running loop
-            asyncio.ensure_future(super().close(), loop=self.loop)
-        else:
-            # If the loop is not running, start it just to run the close operation
+        """Synchronously close the session by running the asynchronous close method and then close the event loop if it was created by this instance."""
+        if not self.loop.is_closed():
+            # Ensure the session close coroutine runs to completion
             self.loop.run_until_complete(super().close())
+            # Only close the loop if it was created by this instance
+            if self.own_loop:
+                self.loop.close()
 
     def get_photos(self, category, page=1):
         # Example synchronous method using asynchronous session management
