@@ -5,7 +5,7 @@ from lomography.constants import BASE_URL
 from .misc import run_async
 
 # Typing
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Callable, Coroutine, Any
 from lomography.api.types import PhotoDict, PhotosResponseDict
 
 if TYPE_CHECKING:
@@ -34,7 +34,10 @@ async def get(lomo: BaseLomography, url: str, params: Optional[dict] = None):
 
 
 async def _fetch_photo_dicts(
-    lomo: BaseLomography, url: str, amt: int = 20, index: int = 0
+    lomo: BaseLomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, PhotosResponseDict]],
+    amt: int = 20,
+    index: int = 0,
 ) -> List[PhotoDict]:
     """Fetch a list of photos from the Lomography API based on the given URL and parameters.
     Start fetching from the specified index and return the specified amount of photos. Note that
@@ -51,7 +54,7 @@ async def _fetch_photo_dicts(
     tasks = []
     for page in range(start_page, end_page + 1):
         params = {"page": page}
-        task = asyncio.create_task(get(lomo, url, params))
+        task = asyncio.create_task(fetch(lomo, page))
         tasks.append(task)
 
     # Run all the fetch tasks concurrently
@@ -61,7 +64,10 @@ async def _fetch_photo_dicts(
 
 
 def fetch_photos(
-    lomo: Lomography, url: str, amt: int = 20, index: int = 0
+    lomo: Lomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, PhotosResponseDict]],
+    amt: int = 20,
+    index: int = 0,
 ) -> List[LomoPhoto]:
     """Fetch a list of photos from the Lomography API based on the given URL and parameters.
     Start fetching from the specified index and return the specified amount of photos. Note that
@@ -71,7 +77,7 @@ def fetch_photos(
     """
 
     # Run the asynchronous function to fetch photo dictionaries
-    photos = run_async(lomo, _fetch_photo_dicts(lomo, url, amt, index))
+    photos = run_async(lomo, _fetch_photo_dicts(lomo, fetch, amt, index))
 
     # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
     from lomography.objects.photo import LomoPhoto
