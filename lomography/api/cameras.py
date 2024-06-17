@@ -1,21 +1,14 @@
 from __future__ import annotations
 
 # Typing
-from typing import List, TypedDict, TYPE_CHECKING
-from .types import CameraDict, MetaDict, PhotosResponseDict
+from typing import TYPE_CHECKING
+from .types import CameraDict, PhotosResponseDict, CamerasResponseDict
 
 if TYPE_CHECKING:
     from lomography.base import BaseLomography
 
 # Utilities
 from lomography.utils.requests import get
-
-
-class CamerasResponseDict(TypedDict):
-    """A dictionary representing a response of cameras."""
-
-    meta: MetaDict
-    cameras: List[CameraDict]
 
 
 async def fetch_cameras(lomo: BaseLomography, page: int = 1) -> CamerasResponseDict:

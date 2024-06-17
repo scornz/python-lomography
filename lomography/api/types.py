@@ -296,3 +296,17 @@ class PhotosResponseDict(TypedDict):
 
     meta: MetaDict
     photos: List[PhotoDict]
+
+
+class CamerasResponseDict(TypedDict):
+    """A dictionary representing a response of cameras."""
+
+    meta: MetaDict
+    cameras: List[CameraDict]
+
+
+class FilmsResponseDict(TypedDict):
+    """A dictionary representing a response of films."""
+
+    meta: MetaDict
+    films: List[FilmDict]
