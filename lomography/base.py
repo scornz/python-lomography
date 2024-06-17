@@ -3,16 +3,17 @@ from __future__ import annotations
 # Typing
 from typing import List, Optional, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from lomography.objects import LomoPhoto, LomoCamera, LomoFilm
 
 # Internal
-from lomography.utils.requests import fetch_photos
-from lomography.api.photos import (
-    fetch_popular_photos,
-    fetch_recent_photos,
-    fetch_selected_photos,
-)
+from lomography.utils.misc import run_async
+from lomography.utils.requests import fetch_films, fetch_photos, fetch_cameras
+from lomography.objects import LomoPhoto, LomoCamera, LomoFilm
+
+# API functions
+import lomography.api.photos
+import lomography.api.cameras
+import lomography.api.films
+
 
 # External
 from aiohttp import ClientSession
@@ -57,7 +58,7 @@ class BaseLomography(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_camera_by_id(self, id: int):
+    def fetch_camera_by_id(self, camera_id: int):
         raise NotImplementedError
 
     @abstractmethod
@@ -65,7 +66,7 @@ class BaseLomography(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_film_by_id(self, id: int):
+    def fetch_film_by_id(self, film_id: int):
         raise NotImplementedError
 
 
@@ -141,7 +142,9 @@ class Lomography(BaseLomography):
             `List[LomoPhoto]`: A list of LomoPhoto objects representing the most popular photos.
         """
 
-        return fetch_photos(self, fetch_popular_photos, amt, index)
+        return fetch_photos(
+            self, lomography.api.photos.fetch_popular_photos, amt, index
+        )
 
     def fetch_recent_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
         """Fetch the most recent photos (right as they are uploaded). This method calls a
@@ -157,7 +160,7 @@ class Lomography(BaseLomography):
             `List[LomoPhoto]`: A list of LomoPhoto objects representing the most recent photos.
         """
 
-        return fetch_photos(self, fetch_recent_photos, amt, index)
+        return fetch_photos(self, lomography.api.photos.fetch_recent_photos, amt, index)
 
     def fetch_selected_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
         """Fetch a selection of featured photos, curated based on specific
@@ -174,19 +177,63 @@ class Lomography(BaseLomography):
             `List[LomoPhoto]`: A list of LomoPhoto objects representing the selected photos.
         """
 
-        return fetch_photos(self, fetch_selected_photos, amt, index)
+        return fetch_photos(
+            self, lomography.api.photos.fetch_selected_photos, amt, index
+        )
 
-    def fetch_cameras(self, amt: int = 20, index: int = 0):
-        raise NotImplementedError
+    def fetch_cameras(self, amt: int = 20, index: int = 0) -> List[LomoCamera]:
+        """Fetch a list of cameras available.
 
-    def fetch_camera_by_id(self, id: int):
-        raise NotImplementedError
+        Args:
+            `amt` (`int`): The number of cameras to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the camera
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoCamera]`: A list of LomoCamera objects representing the cameras.
+        """
+        return fetch_cameras(self, lomography.api.cameras.fetch_cameras, amt, index)
+
+    def fetch_camera_by_id(self, camera_id: int) -> LomoCamera:
+        """Fetch a specific camera by its unique ID.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera to retrieve.
+
+        Returns:
+            `LomoCamera`: A LomoCamera object representing the camera.
+        """
+
+        info = run_async(
+            self, lomography.api.cameras.fetch_camera_by_id(self, camera_id)
+        )
+        return LomoCamera(self, info)
 
     def fetch_films(self, amt: int = 20, index: int = 0):
-        raise NotImplementedError
+        """Fetch a list of films available.
 
-    def fetch_film_by_id(self, id: int):
-        raise NotImplementedError
+        Args:
+            `amt` (`int`): The number of films to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the film
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoFilm]`: A list of LomoFilm objects representing the films.
+        """
+        return fetch_films(self, lomography.api.films.fetch_films, amt, index)
+
+    def fetch_film_by_id(self, film_id: int):
+        """
+        Fetch a specific film by its unique ID.
+
+        Args:
+            `film_id` (int): The unique ID of the film to retrieve.
+
+        Returns:
+            `LomoFilm`: A LomoFilm object representing the film.
+        """
+        info = run_async(self, lomography.api.films.fetch_film_by_id(self, film_id))
+        return LomoFilm(self, info)
 
 
 class AsyncLomography(BaseLomography):
