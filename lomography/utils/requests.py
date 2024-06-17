@@ -7,13 +7,13 @@ from lomography.constants import BASE_URL
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import BaseLomography
 
 # External
 from aiohttp import ClientError
 
 
-async def get(lomo: Lomography, url: str, params: Optional[dict] = None):
+async def get(lomo: BaseLomography, url: str, params: Optional[dict] = None):
     # If no parameters are provided, set it to an empty dictionary
     if params is None:
         params = {}

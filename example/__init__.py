@@ -5,4 +5,4 @@ from os import environ
 
 load_dotenv()
 lomo = Lomography(api_key=environ["LOMOGRAPHY_API_KEY"])
-get(lomo, "/photos/recent")
+lomo.close()

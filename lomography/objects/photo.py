@@ -12,12 +12,12 @@ from .tag import LomoTag
 from .user import LomoUser
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import BaseLomography
 
 
 class LomoPhoto:
 
-    lomo: Lomography
+    lomo: BaseLomography
 
     id: int
 
@@ -42,7 +42,7 @@ class LomoPhoto:
     lens: Optional[LomoLens]
     tags: List[LomoTag]
 
-    def __init__(self, lomo: Lomography, data: PhotoDict):
+    def __init__(self, lomo: BaseLomography, data: PhotoDict):
 
         self.lomo = lomo
         self._data = data

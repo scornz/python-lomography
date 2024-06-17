@@ -5,17 +5,17 @@ from lomography.api.types import FilmDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import BaseLomography
 
 
 class LomoFilm:
 
-    lomo: Lomography
+    lomo: BaseLomography
 
     id: int
     name: str
 
-    def __init__(self, lomo: Lomography, data: FilmDict):
+    def __init__(self, lomo: BaseLomography, data: FilmDict):
         self.lomo = lomo
 
         self.id = data["id"]

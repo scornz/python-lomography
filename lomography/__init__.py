@@ -1,5 +1,5 @@
 # Export necessary classes to be exposed to the user
-from .base import Lomography
+from .base import Lomography, AsyncLomography
 from .objects import (
     LomoCamera,
     LomoFilm,

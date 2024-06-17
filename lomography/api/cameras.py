@@ -5,7 +5,7 @@ from typing import List, TypedDict, TYPE_CHECKING
 from .types import CameraDict, MetaDict, PhotosResponseDict
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import BaseLomography
 
 # Utilities
 from lomography.utils.requests import get
@@ -18,11 +18,11 @@ class CamerasResponseDict(TypedDict):
     cameras: List[CameraDict]
 
 
-async def fetch_cameras(lomo: Lomography, page: int = 1) -> CamerasResponseDict:
+async def fetch_cameras(lomo: BaseLomography, page: int = 1) -> CamerasResponseDict:
     """Fetch all cameras. This will return a list of all cameras.
 
     Args:
-        `lomo` (Lomography): An instance of the Lomography class.
+        `lomo` (BaseLomography): An instance of the BaseLomography class.
         `page` (int): The page number to fetch. Default is 1.
 
     Returns:
@@ -31,11 +31,11 @@ async def fetch_cameras(lomo: Lomography, page: int = 1) -> CamerasResponseDict:
     return await get(lomo, "/cameras", {"page": page})
 
 
-async def fetch_camera_by_id(lomo: Lomography, camera_id: int) -> CameraDict:
+async def fetch_camera_by_id(lomo: BaseLomography, camera_id: int) -> CameraDict:
     """Fetch a singular camera by its unique ID. This will return a single camera.
 
     Args:
-        `lomo` (Lomography): An instance of the Lomography class.
+        `lomo` (BaseLomography): An instance of the BaseLomography class.
         `camera_id` (int): The unique ID of the camera.
 
     Returns:
@@ -45,13 +45,13 @@ async def fetch_camera_by_id(lomo: Lomography, camera_id: int) -> CameraDict:
 
 
 async def fetch_popular_photos_by_camera_id(
-    lomo: Lomography, camera_id: int, page: int = 1
+    lomo: BaseLomography, camera_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch popular photos from a specific camera. This will return the most
     popular photos (uploaded in the last month) taken with that camera.
 
     Args:
-        `lomo` (Lomography): An instance of the Lomography class.
+        `lomo` (BaseLomography): An instance of the BaseLomography class.
         `camera_id` (int): The unique ID of the camera.
         `page` (int): The page number to fetch. Default is 1.
 
@@ -62,13 +62,13 @@ async def fetch_popular_photos_by_camera_id(
 
 
 async def fetch_recent_photos_by_camera_id(
-    lomo: Lomography, camera_id: int, page: int = 1
+    lomo: BaseLomography, camera_id: int, page: int = 1
 ) -> PhotosResponseDict:
     """Fetch recent photos from a specific camera. This will return the most
     recent photos (right as they are uploaded).
 
     Args:
-        `lomo` (Lomography): An instance of the Lomography class.
+        `lomo` (BaseLomography): An instance of the BaseLomography class.
         `camera_id` (int): The unique ID of the camera.
         `page` (int): The page number to fetch. Default is 1.
 
