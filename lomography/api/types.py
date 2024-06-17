@@ -1,5 +1,5 @@
 # Typing
-from typing import List, Literal, NotRequired, TypedDict, Union
+from typing import List, Literal, NotRequired, Optional, TypedDict, Union
 
 
 class CameraDict(TypedDict):
@@ -176,7 +176,7 @@ class UserDict(TypedDict):
 
     username: str
     url: str
-    avatar: ImageDict
+    avatar: Optional[ImageDict]
 
 
 class PhotoDict(TypedDict):
@@ -251,8 +251,8 @@ class PhotoDict(TypedDict):
     title: str
     description: str
     url: str
-    camera: Union[CameraDict, Literal["None"]]
-    film: Union[FilmDict, Literal["None"]]
+    camera: Optional[CameraDict]
+    film: Optional[FilmDict]
 
     # Specified in the API documentation, but currently not included
     # location: NotRequired[LocationDict]
@@ -265,7 +265,7 @@ class PhotoDict(TypedDict):
     asset_ratio: float
     asset_preview: str
 
-    lens: Union[LensDict, Literal["None"]]
+    lens: Optional[LensDict]
     tags: List[TagDict]
 
     user: UserDict

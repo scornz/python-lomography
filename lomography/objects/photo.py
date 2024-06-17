@@ -57,17 +57,8 @@ class LomoPhoto:
         self.small = LomoPhotoImage(data["assets"]["small"])
         self.large = LomoPhotoImage(data["assets"]["large"])
 
-        self.camera = (
-            LomoCamera(lomo, data["camera"])
-            if data["camera"] and data["camera"] != "None"
-            else None
-        )
-
-        self.film = (
-            LomoFilm(lomo, data["film"])
-            if data["film"] and data["film"] != "None"
-            else None
-        )
+        self.camera = LomoCamera(lomo, data["camera"]) if data["camera"] else None
+        self.film = LomoFilm(lomo, data["film"]) if data["film"] else None
 
         self.user = LomoUser(lomo, data["user"])
 
