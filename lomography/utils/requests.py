@@ -6,11 +6,18 @@ from .misc import run_async
 
 # Typing
 from typing import List, Optional, TYPE_CHECKING, Callable, Coroutine, Any
-from lomography.api.types import PhotoDict, PhotosResponseDict
+from lomography.api.types import (
+    CameraDict,
+    FilmDict,
+    PhotoDict,
+    PhotosResponseDict,
+    CamerasResponseDict,
+    FilmsResponseDict,
+)
 
 if TYPE_CHECKING:
     from lomography.base import BaseLomography, Lomography
-    from lomography.objects.photo import LomoPhoto
+    from lomography.objects.photo import LomoPhoto, LomoCamera, LomoFilm
 
 # External
 from aiohttp import ClientError
@@ -63,6 +70,64 @@ async def _fetch_photo_dicts(
     return photos[index : index + amt]
 
 
+async def _fetch_camera_dicts(
+    lomo: BaseLomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, CamerasResponseDict]],
+    amt: int = 20,
+    index: int = 0,
+) -> List[CameraDict]:
+    """Fetch a list of cameras from the Lomography API based on the given URL and parameters.
+    Start fetching from the specified index and return the specified amount of cameras. Note that
+    the API returns photos in pages of 20, so the index and amount are based on the full list of cameras.
+    Operating on numbers that are not divisble by 20 may result in fetching unnecessary pages.
+    """
+
+    # Photos are returned in pages of 20, so we need to calculate the page numbers we
+    # need to fetch based on the index and amount
+    start_page = (index // 20) + 1
+    end_page = ((index + amt - 1) // 20) + 1
+
+    # Generate all page URLs that need to be fetched
+    tasks = []
+    for page in range(start_page, end_page + 1):
+        task = asyncio.create_task(fetch(lomo, page))
+        tasks.append(task)
+
+    # Run all the fetch tasks concurrently
+    results: List[CamerasResponseDict] = await asyncio.gather(*tasks)
+    cameras = [photo for result in results for photo in result["cameras"]]
+    return cameras[index : index + amt]
+
+
+async def _fetch_film_dicts(
+    lomo: BaseLomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, FilmsResponseDict]],
+    amt: int = 20,
+    index: int = 0,
+) -> List[FilmDict]:
+    """Fetch a list of films from the Lomography API based on the given URL and parameters.
+    Start fetching from the specified index and return the specified amount of films. Note that
+    the API returns photos in pages of 20, so the index and amount are based on the full list of films.
+    Operating on numbers that are not divisble by 20 may result in fetching unnecessary pages.
+    """
+
+    # Photos are returned in pages of 20, so we need to calculate the page numbers we
+    # need to fetch based on the index and amount
+    start_page = (index // 20) + 1
+    end_page = ((index + amt - 1) // 20) + 1
+
+    # Generate all page URLs that need to be fetched
+    tasks = []
+    for page in range(start_page, end_page + 1):
+        task = asyncio.create_task(fetch(lomo, page))
+        tasks.append(task)
+
+    # Run all the fetch tasks concurrently
+    results: List[FilmsResponseDict] = await asyncio.gather(*tasks)
+    films = [photo for result in results for photo in result["films"]]
+    return films[index : index + amt]
+
+
 def fetch_photos(
     lomo: Lomography,
     fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, PhotosResponseDict]],
@@ -83,3 +148,47 @@ def fetch_photos(
     from lomography.objects.photo import LomoPhoto
 
     return [LomoPhoto(lomo, photo) for photo in photos]
+
+
+def fetch_cameras(
+    lomo: Lomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, CamerasResponseDict]],
+    amt: int = 20,
+    index: int = 0,
+) -> List[LomoCamera]:
+    """Fetch a list of cameras from the Lomography API based on the given URL and parameters.
+    Start fetching from the specified index and return the specified amount of cameras. Note that
+    the API returns cameras in pages of 20, so the index and amount are based on the full list of cameras.
+    Operating on numbers that are not divisble by 20 may result in fetching unnecessary pages. Return
+    synchronous camera objects.
+    """
+
+    # Run the asynchronous function to fetch photo dictionaries
+    cameras = run_async(lomo, _fetch_camera_dicts(lomo, fetch, amt, index))
+
+    # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
+    from lomography.objects.camera import LomoCamera
+
+    return [LomoCamera(lomo, camera) for camera in cameras]
+
+
+def fetch_films(
+    lomo: Lomography,
+    fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, FilmsResponseDict]],
+    amt: int = 20,
+    index: int = 0,
+) -> List[LomoFilm]:
+    """Fetch a list of films from the Lomography API based on the given URL and parameters.
+    Start fetching from the specified index and return the specified amount of films. Note that
+    the API returns films in pages of 20, so the index and amount are based on the full list of films.
+    Operating on numbers that are not divisble by 20 may result in fetching unnecessary pages. Return
+    synchronous film objects.
+    """
+
+    # Run the asynchronous function to fetch photo dictionaries
+    films = run_async(lomo, _fetch_film_dicts(lomo, fetch, amt, index))
+
+    # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
+    from lomography.objects.film import LomoFilm
+
+    return [LomoFilm(lomo, film) for film in films]
