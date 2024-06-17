@@ -22,7 +22,6 @@
 - Python ^3.10 ([download](https://www.python.org/downloads/))
 - `poetry` (via [your preferred method](https://python-poetry.org/docs/))
 - `make`(hopefully already on your device)
-- Google developer account
 
 ## Setup
 
