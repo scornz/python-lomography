@@ -1,9 +1,26 @@
-from typing import Optional
+from __future__ import annotations
+
+# Typing
+from typing import List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lomography.objects import LomoPhoto, LomoCamera, LomoFilm
+
+# Internal
+from lomography.utils.requests import fetch_photos
+from lomography.api.photos import (
+    fetch_popular_photos,
+    fetch_recent_photos,
+    fetch_selected_photos,
+)
+
+# External
 from aiohttp import ClientSession
 import asyncio
+from abc import ABCMeta, abstractmethod
 
 
-class BaseLomography:
+class BaseLomography(metaclass=ABCMeta):
     """
     Abstract base class for Lomography API handling. This class provides shared attributes
     and an asynchronous method for session management, meant to be used by both synchronous
@@ -22,6 +39,34 @@ class BaseLomography:
         """Abstract method to close the session, must be implemented by subclasses."""
         if self.session:
             await self.session.close()
+
+    @abstractmethod
+    def fetch_popular_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_selected_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_cameras(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_camera_by_id(self, id: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_films(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_film_by_id(self, id: int):
+        raise NotImplementedError
 
 
 class Lomography(BaseLomography):
@@ -81,10 +126,67 @@ class Lomography(BaseLomography):
             if self.own_loop:
                 self.loop.close()
 
-    def get_photos(self, category, page=1):
-        # Example synchronous method using asynchronous session management
-        # Placeholder implementation
-        pass
+    def fetch_popular_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+        """Fetch the most popular photos uploaded in the last month.
+        This method utilizes a predefined API endpoint function to fetch photos
+        that have been identified as the most popular over the last month based on
+          views or likes.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the most popular photos.
+        """
+
+        return fetch_photos(self, fetch_popular_photos, amt, index)
+
+    def fetch_recent_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+        """Fetch the most recent photos (right as they are uploaded). This method calls a
+        function to retrieve the latest photos added to the platform,
+        reflecting the most current content available.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the most recent photos.
+        """
+
+        return fetch_photos(self, fetch_recent_photos, amt, index)
+
+    def fetch_selected_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+        """Fetch a selection of featured photos, curated based on specific
+        criteria like artistic value or themes. This method interfaces with a
+        function designed to pull a curated list of photos that are highlighted
+        for their notable features or thematic focus.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the selected photos.
+        """
+
+        return fetch_photos(self, fetch_selected_photos, amt, index)
+
+    def fetch_cameras(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    def fetch_camera_by_id(self, id: int):
+        raise NotImplementedError
+
+    def fetch_films(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    def fetch_film_by_id(self, id: int):
+        raise NotImplementedError
 
 
 class AsyncLomography(BaseLomography):
