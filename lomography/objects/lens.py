@@ -5,7 +5,7 @@ from lomography.api.types import LensDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography, Lomography
+    from lomography.base import BaseLomography, Lomography, AsyncLomography
 
 # External
 from abc import ABC, abstractmethod
@@ -30,4 +30,12 @@ class LomoLens(BaseLomoLens):
     lomo: Lomography
 
     def __init__(self, lomo: Lomography, data: LensDict):
+        super().__init__(lomo, data)
+
+
+class AsyncLomoLens(BaseLomoLens):
+
+    lomo: AsyncLomography
+
+    def __init__(self, lomo: AsyncLomography, data: LensDict):
         super().__init__(lomo, data)

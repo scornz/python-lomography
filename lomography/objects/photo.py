@@ -5,18 +5,18 @@ from lomography.api.types import PhotoDict
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography, Lomography
+    from lomography.base import BaseLomography, Lomography, AsyncLomography
 
 # External
 from abc import ABC
 
 # Internal
-from .camera import BaseLomoCamera, LomoCamera
-from .film import BaseLomoFilm, LomoFilm
+from .camera import BaseLomoCamera, LomoCamera, AsyncLomoCamera
+from .film import BaseLomoFilm, LomoFilm, AsyncLomoFilm
 from .image import LomoPhotoImage
-from .lens import BaseLomoLens, LomoLens
-from .tag import BaseLomoTag, LomoTag
-from .user import BaseLomoUser, LomoUser
+from .lens import BaseLomoLens, LomoLens, AsyncLomoLens
+from .tag import BaseLomoTag, LomoTag, AsyncLomoTag
+from .user import BaseLomoUser, LomoUser, AsyncLomoUser
 
 
 class BaseLomoPhoto(ABC):
@@ -84,3 +84,25 @@ class LomoPhoto(BaseLomoPhoto):
 
         self.lens = LomoLens(lomo, data["lens"]) if data["lens"] else None
         self.tags = [LomoTag(lomo, tag) for tag in data["tags"]]
+
+
+class AsyncLomoPhoto(BaseLomoPhoto):
+
+    lomo: AsyncLomography
+
+    camera: Optional[AsyncLomoCamera]
+    film: Optional[AsyncLomoFilm]
+    user: AsyncLomoUser
+
+    lens: Optional[AsyncLomoLens]
+    tags: List[AsyncLomoTag]  # type: ignore
+
+    def __init__(self, lomo: AsyncLomography, data: PhotoDict):
+        super().__init__(lomo, data)
+
+        self.camera = AsyncLomoCamera(lomo, data["camera"]) if data["camera"] else None
+        self.film = AsyncLomoFilm(lomo, data["film"]) if data["film"] else None
+        self.user = AsyncLomoUser(lomo, data["user"])
+
+        self.lens = AsyncLomoLens(lomo, data["lens"]) if data["lens"] else None
+        self.tags = [AsyncLomoTag(lomo, tag) for tag in data["tags"]]

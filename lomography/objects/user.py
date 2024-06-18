@@ -5,7 +5,7 @@ from lomography.api.types import FilmDict, UserDict
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography, Lomography
+    from lomography.base import BaseLomography, Lomography, AsyncLomography
 
 # External
 from abc import ABC, abstractmethod
@@ -35,4 +35,12 @@ class LomoUser(BaseLomoUser):
     lomo: Lomography
 
     def __init__(self, lomo: Lomography, data: UserDict):
+        super().__init__(lomo, data)
+
+
+class AsyncLomoUser(BaseLomoUser):
+
+    lomo: AsyncLomography
+
+    def __init__(self, lomo: AsyncLomography, data: UserDict):
         super().__init__(lomo, data)
