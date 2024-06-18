@@ -5,15 +5,40 @@ from lomography.api.types import CameraDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import Lomography, BaseLomography
+
+# External
+from abc import ABC, abstractmethod
 
 
-class LomoCamera:
+class BaseLomoCamera(ABC):
+
+    lomo: BaseLomography
+
+    id: int
+    name: str
+
+    def __init__(self, lomo: BaseLomography, data: CameraDict):
+        self.lomo = lomo
+
+        self.id = data["id"]
+        self.name = data["name"]
+
+    @abstractmethod
+    def fetch_popular_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+
+class LomoCamera(BaseLomoCamera):
     """
     Represents a camera object.
 
     Constructor:
-        `lomo` (`BaseLomography`): An instance of the BaseLomography class.
+        `lomo` (`Lomography`): An instance of the Lomography class.
         `data` (`CameraDict`): The camera data.
 
     Attributes:
@@ -23,14 +48,8 @@ class LomoCamera:
 
     lomo: Lomography
 
-    id: int
-    name: str
-
     def __init__(self, lomo: Lomography, data: CameraDict):
-        self.lomo = lomo
-
-        self.id = data["id"]
-        self.name = data["name"]
+        super().__init__(lomo, data)
 
     def fetch_popular_photos(self, amt: int = 20, index: int = 0):
         """Fetch popular photos taken with this camera. This will return the most

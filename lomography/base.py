@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 # Typing
-from typing import List, Optional, TYPE_CHECKING
+from typing import Sequence, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lomography.objects.photo import BaseLomoPhoto
+    from lomography.objects.camera import BaseLomoCamera
+    from lomography.objects.film import BaseLomoFilm
 
 
 # Internal
@@ -43,73 +48,79 @@ class BaseLomography(metaclass=ABCMeta):
             await self.session.close()
 
     @abstractmethod
-    def fetch_popular_photos(self, amt: int = 20, index: int = 0):
+    def fetch_popular_photos(
+        self, amt: int = 20, index: int = 0
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_recent_photos(self, amt: int = 20, index: int = 0):
+    def fetch_recent_photos(
+        self, amt: int = 20, index: int = 0
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_selected_photos(self, amt: int = 20, index: int = 0):
+    def fetch_selected_photos(
+        self, amt: int = 20, index: int = 0
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_cameras(self, amt: int = 20, index: int = 0):
+    def fetch_cameras(self, amt: int = 20, index: int = 0) -> Sequence[BaseLomoCamera]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_camera_by_id(self, camera_id: int):
+    def fetch_camera_by_id(self, camera_id: int) -> BaseLomoCamera:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_by_camera_id(
         self, camera_id: int, amt: int = 20, index: int = 0
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_by_camera_id(
         self, camera_id: int, amt: int = 20, index: int = 0
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_films(self, amt: int = 20, index: int = 0):
+    def fetch_films(self, amt: int = 20, index: int = 0) -> Sequence[BaseLomoFilm]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_film_by_id(self, film_id: int):
+    def fetch_film_by_id(self, film_id: int) -> BaseLomoFilm:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_by_film_id(
         self, film_id: int, amt: int = 20, index: int = 0
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_by_film_id(
         self, film_id: int, amt: int = 20, index: int = 0
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
@@ -119,7 +130,7 @@ class BaseLomography(metaclass=ABCMeta):
         longitude_east: float,
         latitude_south: float,
         longitude_west: float,
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
     @abstractmethod
@@ -129,7 +140,7 @@ class BaseLomography(metaclass=ABCMeta):
         longitude_east: float,
         latitude_south: float,
         longitude_west: float,
-    ):
+    ) -> Sequence[BaseLomoPhoto]:
         raise NotImplementedError
 
 
@@ -190,7 +201,7 @@ class Lomography(BaseLomography):
             if self.own_loop:
                 self.loop.close()
 
-    def fetch_popular_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+    def fetch_popular_photos(self, amt: int = 20, index: int = 0):
         """Fetch the most popular photos uploaded in the last month.
         This method utilizes a predefined API endpoint function to fetch photos
         that have been identified as the most popular over the last month based on
@@ -209,7 +220,7 @@ class Lomography(BaseLomography):
             self, lomography.api.photos.fetch_popular_photos, amt, index
         )
 
-    def fetch_recent_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+    def fetch_recent_photos(self, amt: int = 20, index: int = 0):
         """Fetch the most recent photos (right as they are uploaded). This method calls a
         function to retrieve the latest photos added to the platform,
         reflecting the most current content available.
@@ -225,7 +236,7 @@ class Lomography(BaseLomography):
 
         return fetch_photos(self, lomography.api.photos.fetch_recent_photos, amt, index)
 
-    def fetch_selected_photos(self, amt: int = 20, index: int = 0) -> List[LomoPhoto]:
+    def fetch_selected_photos(self, amt: int = 20, index: int = 0):
         """Fetch a selection of featured photos, curated based on specific
         criteria like artistic value or themes. This method interfaces with a
         function designed to pull a curated list of photos that are highlighted
@@ -244,7 +255,7 @@ class Lomography(BaseLomography):
             self, lomography.api.photos.fetch_selected_photos, amt, index
         )
 
-    def fetch_cameras(self, amt: int = 20, index: int = 0) -> List[LomoCamera]:
+    def fetch_cameras(self, amt: int = 20, index: int = 0):
         """Fetch a list of cameras available.
 
         Args:
@@ -257,7 +268,7 @@ class Lomography(BaseLomography):
         """
         return fetch_cameras(self, lomography.api.cameras.fetch_cameras, amt, index)
 
-    def fetch_camera_by_id(self, camera_id: int) -> LomoCamera:
+    def fetch_camera_by_id(self, camera_id: int):
         """Fetch a specific camera by its unique ID.
 
         Args:
@@ -274,7 +285,7 @@ class Lomography(BaseLomography):
 
     def fetch_popular_photos_by_camera_id(
         self, camera_id: int, amt: int = 20, index: int = 0
-    ) -> List[LomoPhoto]:
+    ):
         """Fetch popular photos taken with a specific camera. This will return the most
         popular photos (uploaded in the last month) taken with that camera.
 

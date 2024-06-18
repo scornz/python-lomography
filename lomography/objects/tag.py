@@ -5,10 +5,13 @@ from lomography.api.types import TagDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography
+    from lomography.base import BaseLomography, Lomography
+
+# External
+from abc import ABC, abstractmethod
 
 
-class LomoTag:
+class BaseLomoTag(ABC):
 
     lomo: BaseLomography
 
@@ -20,3 +23,11 @@ class LomoTag:
 
         self.id = data["id"]
         self.name = data["name"]
+
+
+class LomoTag(BaseLomoTag):
+
+    lomo: Lomography
+
+    def __init__(self, lomo: Lomography, data: TagDict):
+        super().__init__(lomo, data)

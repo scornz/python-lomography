@@ -5,12 +5,16 @@ from lomography.api.types import FilmDict, UserDict
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography
+    from lomography.base import BaseLomography, Lomography
 
+# External
+from abc import ABC, abstractmethod
+
+# Internal
 from .image import LomoImage
 
 
-class LomoUser:
+class BaseLomoUser(ABC):
 
     lomo: BaseLomography
 
@@ -24,3 +28,11 @@ class LomoUser:
         self.username = data["username"]
         self.url = data["url"]
         self.avatar = LomoImage(data["avatar"]) if data["avatar"] else None
+
+
+class LomoUser(BaseLomoUser):
+
+    lomo: Lomography
+
+    def __init__(self, lomo: Lomography, data: UserDict):
+        super().__init__(lomo, data)

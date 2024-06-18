@@ -5,21 +5,40 @@ from lomography.api.types import FilmDict
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lomography.base import Lomography
+    from lomography.base import Lomography, BaseLomography
+
+# External
+from abc import ABC, abstractmethod
 
 
-class LomoFilm:
+class BaseLomoFilm(ABC):
 
-    lomo: Lomography
+    lomo: BaseLomography
 
     id: int
     name: str
 
-    def __init__(self, lomo: Lomography, data: FilmDict):
+    def __init__(self, lomo: BaseLomography, data: FilmDict):
         self.lomo = lomo
 
         self.id = data["id"]
         self.name = data["name"]
+
+    @abstractmethod
+    def fetch_popular_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos(self, amt: int = 20, index: int = 0):
+        raise NotImplementedError
+
+
+class LomoFilm(BaseLomoFilm):
+
+    lomo: Lomography
+
+    def __init__(self, lomo: Lomography, data: FilmDict):
+        super().__init__(lomo, data)
 
     def fetch_popular_photos(self, amt: int = 20, index: int = 0):
         """Fetch popular photos taken with this film. This will return the most
