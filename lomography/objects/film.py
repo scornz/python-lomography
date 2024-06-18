@@ -84,7 +84,7 @@ class AsyncLomoFilm(BaseLomoFilm):
         Returns:
             `List[AsyncLomoPhoto]`: A list of LomoPhoto objects representing the popular photos.
         """
-        raise NotImplementedError
+        return await self.lomo.fetch_popular_photos_by_film_id(self.id, amt, index)
 
     async def fetch_recent_photos(self, amt: int = 20, index: int = 0):
         """Fetch recent photos taken with this film. This will return the most
@@ -97,4 +97,4 @@ class AsyncLomoFilm(BaseLomoFilm):
         Returns:
             `List[AsyncLomoPhoto]`: A list of LomoPhoto objects representing the recent photos.
         """
-        raise NotImplementedError
+        return await self.lomo.fetch_recent_photos_by_film_id(self.id, amt, index)

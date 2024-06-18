@@ -107,7 +107,7 @@ class AsyncLomoCamera(BaseLomoCamera):
         Returns:
             `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the popular photos.
         """
-        raise NotImplementedError
+        return await self.lomo.fetch_popular_photos_by_camera_id(self.id, amt, index)
 
     async def fetch_recent_photos(self, amt: int = 20, index: int = 0):
         """Fetch recent photos taken with this camera. This will return the most
@@ -120,4 +120,4 @@ class AsyncLomoCamera(BaseLomoCamera):
         Returns:
             `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the recent photos.
         """
-        raise NotImplementedError
+        raise await self.lomo.fetch_recent_photos_by_camera_id(self.id, amt, index)
