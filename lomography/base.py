@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # Typing
-from typing import Sequence, Optional, TYPE_CHECKING
+from typing import Sequence, Optional, TYPE_CHECKING, Union, Awaitable
 
 if TYPE_CHECKING:
     from lomography.objects.photo import BaseLomoPhoto
@@ -11,8 +11,15 @@ if TYPE_CHECKING:
 
 # Internal
 from lomography.utils.misc import run_async
-from lomography.utils.requests import fetch_films, fetch_photos, fetch_cameras
-from lomography.objects import LomoPhoto, LomoCamera, LomoFilm
+from lomography.utils.requests import (
+    fetch_films,
+    fetch_photos,
+    fetch_cameras,
+    fetch_photos_async,
+    fetch_films_async,
+    fetch_cameras_async,
+)
+from lomography.objects import LomoCamera, LomoFilm, AsyncLomoCamera, AsyncLomoFilm
 
 # API functions
 import lomography.api.photos
@@ -50,77 +57,85 @@ class BaseLomography(metaclass=ABCMeta):
     @abstractmethod
     def fetch_popular_photos(
         self, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos(
         self, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_selected_photos(
         self, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_cameras(self, amt: int = 20, index: int = 0) -> Sequence[BaseLomoCamera]:
+    def fetch_cameras(
+        self, amt: int = 20, index: int = 0
+    ) -> Union[Sequence[BaseLomoCamera], Awaitable[Sequence[BaseLomoCamera]]]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_camera_by_id(self, camera_id: int) -> BaseLomoCamera:
+    def fetch_camera_by_id(
+        self, camera_id: int
+    ) -> Union[BaseLomoCamera, Awaitable[BaseLomoCamera]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_by_camera_id(
         self, camera_id: int, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_by_camera_id(
         self, camera_id: int, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_films(self, amt: int = 20, index: int = 0) -> Sequence[BaseLomoFilm]:
+    def fetch_films(
+        self, amt: int = 20, index: int = 0
+    ) -> Union[Sequence[BaseLomoFilm], Awaitable[Sequence[BaseLomoFilm]]]:
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_film_by_id(self, film_id: int) -> BaseLomoFilm:
+    def fetch_film_by_id(
+        self, film_id: int
+    ) -> Union[BaseLomoFilm, Awaitable[BaseLomoFilm]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_by_film_id(
         self, film_id: int, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_by_film_id(
         self, film_id: int, amt: int = 20, index: int = 0
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_popular_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
     def fetch_recent_photos_near_point(
         self, latitude: float, longitude: float, dist: int = 10
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -130,7 +145,7 @@ class BaseLomography(metaclass=ABCMeta):
         longitude_east: float,
         latitude_south: float,
         longitude_west: float,
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
     @abstractmethod
@@ -140,7 +155,7 @@ class BaseLomography(metaclass=ABCMeta):
         longitude_east: float,
         latitude_south: float,
         longitude_west: float,
-    ) -> Sequence[BaseLomoPhoto]:
+    ) -> Union[Sequence[BaseLomoPhoto], Awaitable[Sequence[BaseLomoPhoto]]]:
         raise NotImplementedError
 
 
@@ -584,17 +599,10 @@ class AsyncLomography(BaseLomography):
 
     Constructor:
         `api_key` (str): The API key for authentication to access the Lomography API.
-        `verify` (bool): Whether or not to verify the API key upon construction. Default is False.
-
-    Methods:
-        `get_photos(category, page=1)`: Retrieve photos based on category ('popular', 'recent', or 'selected').
-        `get_camera_photos(camera_id, category)`: Fetch photos taken with a specific camera.
-        `get_film_photos(film_id, category)`: Fetch photos using a specific film type.
-        `get_location_photos(latitude, longitude, radius, category)`: Fetch photos around a specific geographic location.
 
     Example Usage:
         >>> lomo = AsyncLomography(api_key="your_api_key_here")
-        >>> popular_photos = await lomo.get_photos('popular')
+        >>> popular_photos = await lomo.fetch_popular_photos()
         >>> await lomo.close()
 
     Raises:
@@ -611,6 +619,380 @@ class AsyncLomography(BaseLomography):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 
-    async def get_photos(self, category, page=1):
-        # Asynchronous network calls
-        pass
+    async def fetch_popular_photos(
+        self, amt: int = 20, index: int = 0
+    ) -> Sequence[BaseLomoPhoto]:
+        """Fetch the most popular photos uploaded in the last month.
+        This method utilizes a predefined API endpoint function to fetch photos
+        that have been identified as the most popular over the last month based on
+          views or likes.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the most popular photos.
+        """
+        return await fetch_photos_async(
+            self, lomography.api.photos.fetch_popular_photos, amt, index
+        )
+
+    async def fetch_recent_photos(self, amt: int = 20, index: int = 0):
+        """Fetch the most recent photos (right as they are uploaded). This method calls a
+        function to retrieve the latest photos added to the platform,
+        reflecting the most current content available.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the most recent photos.
+        """
+
+        return await fetch_photos_async(
+            self, lomography.api.photos.fetch_recent_photos, amt, index
+        )
+
+    async def fetch_selected_photos(self, amt: int = 20, index: int = 0):
+        """Fetch a selection of featured photos, curated based on specific
+        criteria like artistic value or themes. This method interfaces with a
+        function designed to pull a curated list of photos that are highlighted
+        for their notable features or thematic focus.
+
+        Args:
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the selected photos.
+        """
+
+        return await fetch_photos_async(
+            self, lomography.api.photos.fetch_selected_photos, amt, index
+        )
+
+    async def fetch_cameras(self, amt: int = 20, index: int = 0):
+        """Fetch a list of cameras available.
+
+        Args:
+            `amt` (`int`): The number of cameras to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the camera
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoCamera]`: A list of AsyncLomoCamera objects representing the cameras.
+        """
+        return await fetch_cameras_async(
+            self, lomography.api.cameras.fetch_cameras, amt, index
+        )
+
+    async def fetch_camera_by_id(self, camera_id: int):
+        """Fetch a specific camera by its unique ID.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera to retrieve.
+
+        Returns:
+            `AsyncLomoCamera`: An AsyncLomoCamera object representing the camera.
+        """
+
+        info = await lomography.api.cameras.fetch_camera_by_id(self, camera_id)
+        return AsyncLomoCamera(self, info)
+
+    async def fetch_popular_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch popular photos taken with a specific camera. This will return the most
+        popular photos (uploaded in the last month) taken with that camera.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the popular photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.cameras.fetch_popular_photos_by_camera_id(
+                lomo, camera_id, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_recent_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch recent photos taken with a specific camera. This will return the most
+        recent photos (right as they are uploaded) taken with that camera.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the recent photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.cameras.fetch_recent_photos_by_camera_id(
+                lomo, camera_id, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_films(self, amt: int = 20, index: int = 0):
+        """Fetch a list of films available.
+
+        Args:
+            `amt` (`int`): The number of films to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the film
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoFilm]`: A list of AsyncLomoFilm objects representing the films.
+        """
+        return await fetch_films_async(
+            self, lomography.api.films.fetch_films, amt, index
+        )
+
+    async def fetch_film_by_id(self, film_id: int):
+        """
+        Fetch a specific film by its unique ID.
+
+        Args:
+            `film_id` (int): The unique ID of the film to retrieve.
+
+        Returns:
+            `AsyncLomoFilm`: A AsyncLomoFilm object representing the film.
+        """
+        info = await lomography.api.films.fetch_film_by_id(self, film_id)
+        return AsyncLomoFilm(self, info)
+
+    async def fetch_popular_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch popular photos taken with a specific film. This will return the most
+        popular photos (uploaded in the last month) taken with that film.
+
+        Args:
+            `film_id` (`int`): The unique ID of the film.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the popular photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.films.fetch_popular_photos_by_film_id(
+                lomo, film_id, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_recent_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch recent photos taken with a specific film. This will return the most
+        recent photos (right as they are uploaded) taken with that film.
+
+        Args:
+            `film_id` (`int`): The unique ID of the film.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the recent photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.films.fetch_recent_photos_by_film_id(
+                lomo, film_id, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch photos near a particular point in a range. This will return the photos taken
+        closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_popular_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch popular photos near a particular point in a range. This will return the most
+        popular photos (uploaded in the last month) taken closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the popular photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_popular_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_recent_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch recent photos near a particular point in a range. This will return
+        the most recent photos (right as they are uploaded) taken closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the recent photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_recent_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_recent_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch recent photos within a particular bounding box. This will return the most
+        recent photos (right as they are uploaded).
+
+        Args:
+            `latitude_north` (`float`): The northern latitude of the bounding box.
+            `longitude_east` (`float`): The eastern longitude of the bounding box.
+            `latitude_south` (`float`): The southern latitude of the bounding box.
+            `longitude_west` (`float`): The western longitude of the bounding box.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the recent photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_recent_photos_within_bounding_box(
+                lomo,
+                latitude_north,
+                longitude_east,
+                latitude_south,
+                longitude_west,
+                page,
+            ),
+            amt,
+            index,
+        )
+
+    async def fetch_popular_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch popular photos within a particular bounding box. This will return the most
+        popular photos (uploaded in the last month).
+
+        Args:
+            `latitude_north` (`float`): The northern latitude of the bounding box.
+            `longitude_east` (`float`): The eastern longitude of the bounding box.
+            `latitude_south` (`float`): The southern latitude of the bounding box.
+            `longitude_west` (`float`): The western longitude of the bounding box.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0
+
+        Returns:
+            `List[AsyncLomoPhoto]`: A list of AsyncLomoPhoto objects representing the popular photos.
+        """
+        return await fetch_photos_async(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_popular_photos_within_bounding_box(
+                lomo,
+                latitude_north,
+                longitude_east,
+                latitude_south,
+                longitude_west,
+                page,
+            ),
+            amt,
+            index,
+        )

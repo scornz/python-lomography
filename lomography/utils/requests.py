@@ -16,8 +16,15 @@ from lomography.api.types import (
 )
 
 if TYPE_CHECKING:
-    from lomography.base import BaseLomography, Lomography
-    from lomography.objects.photo import LomoPhoto, LomoCamera, LomoFilm
+    from lomography.base import BaseLomography, Lomography, AsyncLomography
+    from lomography.objects import (
+        LomoPhoto,
+        LomoCamera,
+        LomoFilm,
+        AsyncLomoPhoto,
+        AsyncLomoCamera,
+        AsyncLomoFilm,
+    )
 
 # External
 from aiohttp import ClientError
@@ -28,6 +35,9 @@ async def get(lomo: BaseLomography, url: str, params: Optional[dict] = None):
     # If no parameters are provided, set it to an empty dictionary
     if params is None:
         params = {}
+
+    # Make sure lomography has a session
+    await lomo.create_session()
 
     try:
         assert lomo.session is not None
@@ -151,7 +161,7 @@ def fetch_photos(
 
 
 async def fetch_photos_async(
-    lomo: Lomography,
+    lomo: AsyncLomography,
     fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, PhotosResponseDict]],
     amt: int = 20,
     index: int = 0,
@@ -167,9 +177,9 @@ async def fetch_photos_async(
     photos = await _fetch_photo_dicts(lomo, fetch, amt, index)
 
     # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
-    from lomography.objects.photo import LomoPhoto
+    from lomography.objects.photo import AsyncLomoPhoto
 
-    return [LomoPhoto(lomo, photo) for photo in photos]
+    return [AsyncLomoPhoto(lomo, photo) for photo in photos]
 
 
 def fetch_cameras(
@@ -195,7 +205,7 @@ def fetch_cameras(
 
 
 async def fetch_cameras_async(
-    lomo: Lomography,
+    lomo: AsyncLomography,
     fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, CamerasResponseDict]],
     amt: int = 20,
     index: int = 0,
@@ -211,9 +221,9 @@ async def fetch_cameras_async(
     cameras = await _fetch_camera_dicts(lomo, fetch, amt, index)
 
     # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
-    from lomography.objects.camera import LomoCamera
+    from lomography.objects.camera import AsyncLomoCamera
 
-    return [LomoCamera(lomo, camera) for camera in cameras]
+    return [AsyncLomoCamera(lomo, camera) for camera in cameras]
 
 
 def fetch_films(
@@ -239,7 +249,7 @@ def fetch_films(
 
 
 async def fetch_films_async(
-    lomo: Lomography,
+    lomo: AsyncLomography,
     fetch: Callable[[BaseLomography, int], Coroutine[Any, Any, FilmsResponseDict]],
     amt: int = 20,
     index: int = 0,
@@ -255,6 +265,6 @@ async def fetch_films_async(
     films = await _fetch_film_dicts(lomo, fetch, amt, index)
 
     # Import the LomoPhoto class here to avoid circular imports, so this function is available everywhere
-    from lomography.objects.film import LomoFilm
+    from lomography.objects.film import AsyncLomoFilm
 
-    return [LomoFilm(lomo, film) for film in films]
+    return [AsyncLomoFilm(lomo, film) for film in films]
