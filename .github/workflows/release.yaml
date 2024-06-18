@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  release-to-pypi:
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.10.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.11
+
+      - name: Cache poetry install
+        uses: actions/cache@v2
+        with:
+          path: ~/.local
+          key: poetry-1.8.3-0
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Publish package
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish
