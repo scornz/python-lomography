@@ -51,6 +51,9 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
+      - name: Build package
+        run: poetry build
+
       - name: Publish package
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
