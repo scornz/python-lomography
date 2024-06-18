@@ -13,6 +13,7 @@ from lomography.objects import LomoPhoto, LomoCamera, LomoFilm
 import lomography.api.photos
 import lomography.api.cameras
 import lomography.api.films
+import lomography.api.location
 
 
 # External
@@ -62,11 +63,73 @@ class BaseLomography(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
+    def fetch_popular_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
     def fetch_films(self, amt: int = 20, index: int = 0):
         raise NotImplementedError
 
     @abstractmethod
     def fetch_film_by_id(self, film_id: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_popular_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_photos_near_point(
+        self, latitude: float, longitude: float, dist: int = 10
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_popular_photos_near_point(
+        self, latitude: float, longitude: float, dist: int = 10
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos_near_point(
+        self, latitude: float, longitude: float, dist: int = 10
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_recent_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
+    def fetch_popular_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+    ):
         raise NotImplementedError
 
 
@@ -209,6 +272,54 @@ class Lomography(BaseLomography):
         )
         return LomoCamera(self, info)
 
+    def fetch_popular_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ) -> List[LomoPhoto]:
+        """Fetch popular photos taken with a specific camera. This will return the most
+        popular photos (uploaded in the last month) taken with that camera.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the popular photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.cameras.fetch_popular_photos_by_camera_id(
+                lomo, camera_id, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_recent_photos_by_camera_id(
+        self, camera_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch recent photos taken with a specific camera. This will return the most
+        recent photos (right as they are uploaded) taken with that camera.
+
+        Args:
+            `camera_id` (`int`): The unique ID of the camera.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the recent photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.cameras.fetch_recent_photos_by_camera_id(
+                lomo, camera_id, page
+            ),
+            amt,
+            index,
+        )
+
     def fetch_films(self, amt: int = 20, index: int = 0):
         """Fetch a list of films available.
 
@@ -234,6 +345,223 @@ class Lomography(BaseLomography):
         """
         info = run_async(self, lomography.api.films.fetch_film_by_id(self, film_id))
         return LomoFilm(self, info)
+
+    def fetch_popular_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch popular photos taken with a specific film. This will return the most
+        popular photos (uploaded in the last month) taken with that film.
+
+        Args:
+            `film_id` (`int`): The unique ID of the film.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the popular photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.films.fetch_popular_photos_by_film_id(
+                lomo, film_id, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_recent_photos_by_film_id(
+        self, film_id: int, amt: int = 20, index: int = 0
+    ):
+        """Fetch recent photos taken with a specific film. This will return the most
+        recent photos (right as they are uploaded) taken with that film.
+
+        Args:
+            `film_id` (`int`): The unique ID of the film.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the recent photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.films.fetch_recent_photos_by_film_id(
+                lomo, film_id, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch photos near a particular point in a range. This will return the photos taken
+        closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_popular_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch popular photos near a particular point in a range. This will return the most
+        popular photos (uploaded in the last month) taken closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the popular photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_popular_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_recent_photos_near_point(
+        self,
+        latitude: float,
+        longitude: float,
+        dist: int = 10,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch recent photos near a particular point in a range. This will return
+        the most recent photos (right as they are uploaded) taken closest to that point.
+
+        Args:
+            `latitude` (`float`): The latitude of the point.
+            `longitude` (`float`): The longitude of the point.
+            `dist` (`int`): The range in kilometers to search for photos. Default is 10.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the recent photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_recent_photos_near_point(
+                lomo, latitude, longitude, dist, page
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_recent_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch recent photos within a particular bounding box. This will return the most
+        recent photos (right as they are uploaded).
+
+        Args:
+            `latitude_north` (`float`): The northern latitude of the bounding box.
+            `longitude_east` (`float`): The eastern longitude of the bounding box.
+            `latitude_south` (`float`): The southern latitude of the bounding box.
+            `longitude_west` (`float`): The western longitude of the bounding box.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0.
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the recent photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_recent_photos_within_bounding_box(
+                lomo,
+                latitude_north,
+                longitude_east,
+                latitude_south,
+                longitude_west,
+                page,
+            ),
+            amt,
+            index,
+        )
+
+    def fetch_popular_photos_within_bounding_box(
+        self,
+        latitude_north: float,
+        longitude_east: float,
+        latitude_south: float,
+        longitude_west: float,
+        amt: int = 20,
+        index: int = 0,
+    ):
+        """Fetch popular photos within a particular bounding box. This will return the most
+        popular photos (uploaded in the last month).
+
+        Args:
+            `latitude_north` (`float`): The northern latitude of the bounding box.
+            `longitude_east` (`float`): The eastern longitude of the bounding box.
+            `latitude_south` (`float`): The southern latitude of the bounding box.
+            `longitude_west` (`float`): The western longitude of the bounding box.
+            `amt` (`int`): The number of photos to retrieve. Defaults to 20.
+            `index` (`int`): The zero-based index from which to start the photo
+            retrieval within the result set. Defaults to 0
+
+        Returns:
+            `List[LomoPhoto]`: A list of LomoPhoto objects representing the popular photos.
+        """
+        return fetch_photos(
+            self,
+            lambda lomo, page: lomography.api.location.fetch_popular_photos_within_bounding_box(
+                lomo,
+                latitude_north,
+                longitude_east,
+                latitude_south,
+                longitude_west,
+                page,
+            ),
+            amt,
+            index,
+        )
 
 
 class AsyncLomography(BaseLomography):
