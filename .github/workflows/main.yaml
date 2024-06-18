@@ -1,0 +1,104 @@
+name: CI
+
+on: [push]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.10.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.11
+
+      # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
+      # from installing Poetry every time, which can be slow. Note the use of the Poetry version
+      # number in the cache key, and the "-0" suffix: this allows you to invalidate the cache
+      # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
+      # mildly cleaner by using an environment variable, but I don't really care.
+      - name: cache poetry install
+        uses: actions/cache@v2
+        with:
+          path: ~/.local
+          key: poetry-1.8.3-0
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Test with pytest
+        run: poetry run pytest
+
+  style-check:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.10.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.11
+
+      - name: cache poetry install
+        uses: actions/cache@v2
+        with:
+          path: ~/.local
+          key: poetry-1.8.3-0
+
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Code quality
+        run: poetry run black . --check

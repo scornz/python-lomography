@@ -1,5 +1,5 @@
 # Typing
-from typing import List, Literal, NotRequired, Optional, TypedDict, Union
+from typing import List, Optional, TypedDict
 
 
 class CameraDict(TypedDict):

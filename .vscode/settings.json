@@ -1,3 +1,6 @@
 {
-  "black-formatter.importStrategy": "fromEnvironment"
+  "black-formatter.importStrategy": "fromEnvironment",
+  "[yaml]": {
+    "editor.tabSize": 2
+  }
 }
