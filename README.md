@@ -17,6 +17,28 @@
 
 > A Python SDK for fetching images from the lomography.com API.
 
+## Install
+
+> pip install python-lomography
+
+## Example Usage
+
+For most use cases:
+
+```python
+lomo = Lomography(api_key="api_key_here")
+photos = lomo.fetch_popular_photos(amt=15)
+lomo.close()
+```
+
+or for asynchronous use cases:
+
+```python
+async_lomo = AsyncLomography(api_key="api_key_here")
+photos = await async_lomo.fetch_popular_photos(amt=15)
+await async_lomo.close()
+```
+
 ## Development Requirements
 
 - Python ^3.10 ([download](https://www.python.org/downloads/))
