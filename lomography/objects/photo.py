@@ -65,6 +65,59 @@ class BaseLomoPhoto(ABC):
 
 
 class LomoPhoto(BaseLomoPhoto):
+    """
+    A photo object from Lomography, containing all the necessary information
+    about a photo. This class contains the camera, film, user, lens, tags, and
+    images associated with the photo.
+
+    :ivar id: The unique identifier for the photo.
+    :vartype id: int
+
+    :ivar title: The title of the photo.
+    :vartype title: Optional[str]
+
+    :ivar description: The description of the photo.
+    :vartype description: Optional[str]
+
+    :ivar url: The URL of the photo.
+    :vartype url: str
+
+    :ivar camera: The camera used to take the photo.
+    :vartype camera: Optional[LomoCamera]
+
+    :ivar film: The film used to take the photo.
+    :vartype film: Optional[LomoFilm]
+
+    :ivar user: The user who uploaded the photo.
+    :vartype user: LomoUser
+
+    :ivar small: The small version of the photo.
+    :vartype small: LomoPhotoImage
+
+    :ivar large: The large version of the photo.
+    :vartype large: LomoPhotoImage
+
+    :ivar asset_hash: The hash of the photo asset.
+    :vartype asset_hash: str
+
+    :ivar asset_width: The width of the photo asset.
+    :vartype asset_width: int
+
+    :ivar asset_height: The height of the photo asset.
+    :vartype asset_height: int
+
+    :ivar asset_ratio: The aspect ratio of the photo asset.
+    :vartype asset_ratio: float
+
+    :ivar asset_preview: The preview of the photo asset.
+    :vartype asset_preview: str
+
+    :ivar lens: The lens used to take the photo.
+    :vartype lens: Optional[LomoLens]
+
+    :ivar tags: The tags associated with the photo.
+    :vartype tags: List[LomoTag]
+    """
 
     lomo: Lomography
 
@@ -76,6 +129,13 @@ class LomoPhoto(BaseLomoPhoto):
     tags: List[LomoTag]  # type: ignore
 
     def __init__(self, lomo: Lomography, data: PhotoDict):
+        """
+        :param lomo: The Lomography instance
+        :type lomo: Lomography
+        :param data: The photo data, fetched directly from the API
+        :type data: PhotoDict
+        """
+
         super().__init__(lomo, data)
 
         self.camera = LomoCamera(lomo, data["camera"]) if data["camera"] else None
@@ -87,6 +147,59 @@ class LomoPhoto(BaseLomoPhoto):
 
 
 class AsyncLomoPhoto(BaseLomoPhoto):
+    """
+    An asynchronous photo object from Lomography, containing all the necessary information
+    about a photo. This class contains the camera, film, user, lens, tags, and
+    images associated with the photo.
+
+    :ivar id: The unique identifier for the photo.
+    :vartype id: int
+
+    :ivar title: The title of the photo.
+    :vartype title: Optional[str]
+
+    :ivar description: The description of the photo.
+    :vartype description: Optional[str]
+
+    :ivar url: The URL of the photo.
+    :vartype url: str
+
+    :ivar camera: The camera used to take the photo.
+    :vartype camera: Optional[AsyncLomoCamera]
+
+    :ivar film: The film used to take the photo.
+    :vartype film: Optional[AsyncLomoFilm]
+
+    :ivar user: The user who uploaded the photo.
+    :vartype user: AsyncLomoUser
+
+    :ivar small: The small version of the photo.
+    :vartype small: LomoPhotoImage
+
+    :ivar large: The large version of the photo.
+    :vartype large: LomoPhotoImage
+
+    :ivar asset_hash: The hash of the photo asset.
+    :vartype asset_hash: str
+
+    :ivar asset_width: The width of the photo asset.
+    :vartype asset_width: int
+
+    :ivar asset_height: The height of the photo asset.
+    :vartype asset_height: int
+
+    :ivar asset_ratio: The aspect ratio of the photo asset.
+    :vartype asset_ratio: float
+
+    :ivar asset_preview: The preview of the photo asset.
+    :vartype asset_preview: str
+
+    :ivar lens: The lens used to take the photo.
+    :vartype lens: Optional[AsyncLomoLens]
+
+    :ivar tags: The tags associated with the photo.
+    :vartype tags: List[AsyncLomoTag]
+    """
 
     lomo: AsyncLomography
 
@@ -98,6 +211,13 @@ class AsyncLomoPhoto(BaseLomoPhoto):
     tags: List[AsyncLomoTag]  # type: ignore
 
     def __init__(self, lomo: AsyncLomography, data: PhotoDict):
+        """
+        :param lomo: The AsyncLomography instance
+        :type lomo: AsyncLomography
+        :param data: The photo data, fetched directly from the API
+        :type data: PhotoDict
+        """
+
         super().__init__(lomo, data)
 
         self.camera = AsyncLomoCamera(lomo, data["camera"]) if data["camera"] else None

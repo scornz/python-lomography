@@ -39,6 +39,3 @@ html_theme = "sphinx_rtd_theme"
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
-
-# -- Show both init function and class documentation
-autoclass_content = "both"

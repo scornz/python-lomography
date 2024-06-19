@@ -9,6 +9,12 @@ from .objects import (
     LomoImage,
     LomoLens,
     LomoTag,
+    AsyncLomoCamera,
+    AsyncLomoFilm,
+    AsyncLomoPhoto,
+    AsyncLomoUser,
+    AsyncLomoLens,
+    AsyncLomoTag,
 )
 
 __version__ = "0.1.0"

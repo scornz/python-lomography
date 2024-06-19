@@ -26,16 +26,50 @@ class BaseLomoLens(ABC):
 
 
 class LomoLens(BaseLomoLens):
+    """
+    Represents a lens object.
+
+    :ivar id: The unique ID of the lens.
+    :vartype id: int
+
+    :ivar name: The name of the lens.
+    :vartype name: str
+    """
 
     lomo: Lomography
 
     def __init__(self, lomo: Lomography, data: LensDict):
+        """
+        :param lomo: The Lomography instance.
+        :type lomo: Lomography
+
+        :param data: The lens data fetched from the API.
+        :type data: LensDict
+        """
+
         super().__init__(lomo, data)
 
 
 class AsyncLomoLens(BaseLomoLens):
+    """
+    Represents an asynchronous lens object.
+
+    :ivar id: The unique ID of the lens.
+    :vartype id: int
+
+    :ivar name: The name of the lens.
+    :vartype name: str
+    """
 
     lomo: AsyncLomography
 
     def __init__(self, lomo: AsyncLomography, data: LensDict):
+        """
+        :param lomo: The AsyncLomography instance.
+        :type lomo: AsyncLomography
+
+        :param data: The lens data fetched from the API.
+        :type data: LensDict
+        """
+
         super().__init__(lomo, data)
