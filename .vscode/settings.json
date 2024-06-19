@@ -2,5 +2,7 @@
   "black-formatter.importStrategy": "fromEnvironment",
   "[yaml]": {
     "editor.tabSize": 2
-  }
+  },
+  "esbonio.sphinx.forceFullBuild": true,
+  "esbonio.sphinx.buildDir": "${workspaceFolder}/docs/build"
 }
