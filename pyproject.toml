@@ -8,8 +8,6 @@ packages = [{include = "lomography"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-requests = "^2.32.3"
-python-dotenv = "^1.0.1"
 aiohttp = "^3.9.5"
 
 
