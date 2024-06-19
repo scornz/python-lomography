@@ -3,7 +3,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../../lomography"))
+sys.path.insert(0, os.path.abspath("../lomography"))
 
 # -- Project information
 
