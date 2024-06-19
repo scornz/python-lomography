@@ -1,5 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../../lomography"))
+
 # -- Project information
 
 project = "python-lomography"
@@ -33,3 +38,6 @@ html_theme = "sphinx_rtd_theme"
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
+
+# -- Show both init function and class documentation
+autoclass_content = "both"
