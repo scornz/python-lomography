@@ -24,6 +24,13 @@ types-requests = "^2.32.0.20240602"
 [tool.poetry.group.test.dependencies]
 pytest = "^8.2.2"
 
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.3.7"
+sphinx-rtd-theme = "^2.0.0"
+esbonio = "^0.16.4"
+doc8 = "^1.1.1"
+
 [tool.black]
 line-length = 88
 include = '/(example|lomography|tests)/.*\.py$'
