@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-lomography"
-version = "1.0.1"
+version = "1.0.2"
 description = "A Python SDK for fetching images from the lomography.com API."
 authors = ["Mike Scornavacca <52425912+scornz@users.noreply.github.com>"]
 readme = "README.md"
