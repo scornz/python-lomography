@@ -1,6 +1,8 @@
 API
 ===
 
+.. _api:
+
 This page provides a detailed description of every class and function provided
 by the `lomography` module. It is seperated into two sections: the synchronous
 API and the asynchronous API. The synchronous API is a thin wrapper around the
