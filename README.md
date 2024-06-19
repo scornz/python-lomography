@@ -39,6 +39,10 @@ photos = await async_lomo.fetch_popular_photos(amt=15)
 await async_lomo.close()
 ```
 
+## Documentation
+
+All documentation for _python-lomography_ can be found [here](https://python-lomography.readthedocs.io/en/latest/).
+
 ## Development Requirements
 
 - Python ^3.10 ([download](https://www.python.org/downloads/))
